@@ -1,0 +1,139 @@
+<!doctype html>
+<!-- LUNAR LANDER: AFTERBURN v1.0.0 BETA. A Rainwater Games production. © 2026 Rainwater Games (Jeff Rainwater). All rights reserved.
+     All code, art and music are original. -->
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="author" content="Rainwater Games - Jeff Rainwater">
+<meta name="description" content="Lunar Lander: Afterburn. A newtro vector lander sequel by Rainwater Games.">
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#000000"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="icon-192.png">
+<title>Lunar Lander: Afterburn - Rainwater Games</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;background:#000;overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none;color:#e8fbff;font-family:ui-monospace,"SF Mono",Menlo,Consolas,"Roboto Mono",monospace}
+canvas{position:fixed;inset:0;display:block;touch-action:none}
+.ov{position:fixed;inset:0;z-index:20;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:max(16px,env(safe-area-inset-top)) 16px max(16px,env(safe-area-inset-bottom));text-align:center;overflow-y:auto;background:rgba(0,4,10,.72);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);animation:fin .35s ease}
+@keyframes fin{from{opacity:0;transform:scale(1.03)}to{opacity:1;transform:none}}
+.ov.hide,#hud.hide{display:none}
+#title{background:linear-gradient(180deg,rgba(0,0,0,.55),rgba(0,0,0,0) 40%,rgba(0,0,0,0) 55%,rgba(0,0,0,.85));backdrop-filter:none;-webkit-backdrop-filter:none;justify-content:space-between}
+.brand{letter-spacing:.38em;font-size:11px;color:#7df9ff;opacity:.85}
+.logo1{font-size:clamp(20px,6.4vw,30px);letter-spacing:.32em;color:#e8fbff;text-shadow:0 0 6px #7df9ff,0 0 18px #2bd9ff;margin-top:8px;padding-left:.32em}
+.logo2{font-size:clamp(44px,14.5vw,72px);font-weight:900;letter-spacing:.06em;line-height:1;background:linear-gradient(180deg,#fff 10%,#ffb347 55%,#ff4fa3);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 10px rgba(255,120,80,.8)) drop-shadow(0 0 26px rgba(255,60,160,.5));font-style:italic}
+.tag{font-size:12px;color:#9fe;letter-spacing:.12em}
+.badge{display:inline-block;border:1px solid #ff4fa3;color:#ff9ccc;border-radius:6px;padding:2px 7px;font-size:11px;letter-spacing:.16em;box-shadow:0 0 10px rgba(255,79,163,.5)}
+.col{display:flex;flex-direction:column;align-items:center;gap:10px;width:100%}
+.btn{font:700 17px/1 inherit;font-family:inherit;letter-spacing:.16em;color:#001014;background:linear-gradient(180deg,#bff,#3be3ff);border:0;border-radius:14px;padding:15px 22px;min-width:230px;max-width:90vw;cursor:pointer;box-shadow:0 0 0 1px #aff inset,0 0 22px rgba(59,227,255,.55);transition:transform .08s}
+.btn:active{transform:scale(.96)}
+.btn.s{background:transparent;color:#bff;box-shadow:0 0 0 1.5px #3be3ff inset,0 0 14px rgba(59,227,255,.25);padding:12px 18px;font-size:14px}
+.btn.hot{background:linear-gradient(180deg,#ffd18a,#ff6a3d);box-shadow:0 0 0 1px #fec inset,0 0 22px rgba(255,106,61,.6)}
+.foot{font-size:10px;color:#8ab;line-height:1.5;margin-bottom:4px}
+h2{margin:0;font-size:24px;letter-spacing:.22em;color:#e8fbff;text-shadow:0 0 8px #3be3ff;font-weight:800}
+.panel{width:min(380px,94vw);border:1px solid #3be3ff55;border-radius:18px;background:rgba(0,20,28,.6);padding:14px;box-shadow:0 0 30px rgba(59,227,255,.12) inset}
+.row{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;font-size:14px;padding:7px 2px}
+input[type=range]{width:150px;accent-color:#3be3ff}
+input[type=checkbox]{width:24px;height:24px;accent-color:#3be3ff}
+#map,#hangar{justify-content:flex-start}
+.mhead{display:flex;align-items:center;justify-content:space-between;width:min(380px,94vw);gap:8px}
+.chips{font-size:13px;color:#ffd18a;text-shadow:0 0 8px #ff6a3d}
+.world{width:min(380px,94vw);border-radius:16px;padding:12px;text-align:left;border:1px solid var(--c);box-shadow:0 0 16px color-mix(in srgb,var(--c) 30%,transparent) inset;background:rgba(0,0,0,.55)}
+.world.lock{opacity:.4;filter:grayscale(.7)}
+.wn{font-size:18px;font-weight:800;letter-spacing:.2em;color:var(--c);text-shadow:0 0 8px var(--c)}
+.ws{font-size:11px;color:#9ab;margin:2px 0 8px}
+.lvls{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.lb{font-family:inherit;border:1px solid var(--c);background:rgba(255,255,255,.04);color:#e8fbff;border-radius:12px;padding:8px 4px;cursor:pointer;min-height:66px}
+.lb b{display:block;font-size:16px;color:var(--c)}.lb i{display:block;font-style:normal;font-size:10px;margin:3px 0;color:#cde;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lb span{font-size:13px;letter-spacing:.1em;color:#ffd18a}
+.lb:disabled{opacity:.35;cursor:default}
+.up{display:flex;align-items:center;gap:10px;width:min(380px,94vw);text-align:left;border:1px solid #3be3ff44;border-radius:14px;padding:10px 12px;background:rgba(0,0,0,.5)}
+.up .t{flex:1}.up .t b{font-size:15px;letter-spacing:.1em;color:#bff}.up .t div{font-size:11px;color:#9ab;margin-top:2px}
+.pips{letter-spacing:.2em;color:#3be3ff;font-size:13px;margin-top:3px}
+.up button{font-family:inherit;font-weight:700;border:0;border-radius:10px;padding:9px 10px;min-width:76px;background:linear-gradient(180deg,#ffd18a,#ff6a3d);color:#200;cursor:pointer}
+.up button:disabled{background:#334;color:#789}
+#hud{position:fixed;top:max(8px,env(safe-area-inset-top));right:8px;z-index:10}
+#bPause{width:42px;height:42px;border-radius:12px;border:1px solid #3be3ff88;background:rgba(0,10,16,.5);color:#bff;font:700 16px inherit;cursor:pointer}
+#intro{background:rgba(0,0,0,.35);backdrop-filter:none;-webkit-backdrop-filter:none;justify-content:flex-end;padding-bottom:max(70px,env(safe-area-inset-bottom))}
+.card{width:min(370px,92vw);border:1px solid var(--c,#3be3ff);border-radius:18px;padding:14px 16px;background:rgba(0,8,12,.82);box-shadow:0 0 24px color-mix(in srgb,var(--c,#3be3ff) 35%,transparent)}
+.card .k{font-size:11px;letter-spacing:.3em;color:var(--c,#3be3ff)}
+.card .n{font-size:24px;font-weight:800;letter-spacing:.08em;margin:4px 0}
+.card .o{font-size:13px;color:#e8fbff;line-height:1.45}
+.card .h{font-size:11.5px;color:#9ab;margin-top:6px;line-height:1.4}
+.tap{margin-top:10px;font-size:13px;letter-spacing:.25em;color:#bff;animation:pulse 1.2s infinite}
+@keyframes pulse{50%{opacity:.35}}
+.stars{display:flex;gap:14px;justify-content:center;font-size:44px;margin:4px 0}
+.stars i{font-style:normal;color:#223;text-shadow:none;transform:scale(.6);transition:all .35s cubic-bezier(.3,1.8,.5,1)}
+.stars i.on{color:#ffd18a;text-shadow:0 0 14px #ff6a3d,0 0 30px #ffb347;transform:scale(1)}
+.sl{width:100%;font-size:13px;text-align:left;line-height:1.7}
+.sl div{display:flex;justify-content:space-between;border-bottom:1px solid #ffffff14}
+.sl .y{color:#ffd18a}.sl .n{color:#678}
+.big{font-size:30px;font-weight:900;letter-spacing:.18em}
+.crash{color:#ff6a6a;text-shadow:0 0 12px #f33}
+.ok{color:#7dffb0;text-shadow:0 0 12px #2f8}
+.note{font-size:12px;color:#ffd18a;min-height:16px}
+#splash{position:fixed;inset:0;z-index:60;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;background:#000;transition:opacity .6s}
+#splash.gone{opacity:0;pointer-events:none}
+#splash .b{font-size:18px;letter-spacing:.45em;color:#7df9ff;text-shadow:0 0 12px #3be3ff;padding-left:.45em}
+#splash .l{width:140px;height:2px;background:linear-gradient(90deg,transparent,#3be3ff,transparent);animation:scan 1s infinite}
+@keyframes scan{50%{transform:scaleX(.3)}}
+</style></head><body>
+<div id="splash"><div class="b">RAINWATER GAMES</div><div class="l"></div></div>
+<canvas id="c"></canvas>
+<div id="hud" class="hide"><button id="bPause" aria-label="Pause">II</button></div>
+
+<div id="title" class="ov hide" style="padding-bottom:max(76px,calc(env(safe-area-inset-bottom) + 70px))">
+ <div class="col" style="gap:6px;margin-top:10px"><div class="brand">RAINWATER GAMES PRESENTS</div>
+  <div class="logo1">LUNAR LANDER</div><div class="logo2">AFTERBURN</div>
+  <div><span class="badge">BETA</span> <span class="tag" id="verT">v1.0.0</span></div></div>
+ <div class="col"><button class="btn" id="bPlay">PLAY CAMPAIGN</button>
+  <button class="btn s" id="bHangar">HANGAR</button><button class="btn s" id="bSet">SETTINGS</button>
+  <div class="foot" style="margin-top:6px">Hold to thrust · slide to tilt · two fingers to afterburn<br>Keyboard: ↑ / Space thrust · ← → tilt · Shift afterburn<br><br>© 2026 Rainwater Games (Jeff Rainwater). All rights reserved.</div></div>
+</div>
+
+<div id="map" class="ov hide">
+ <div class="mhead"><button class="btn s" style="min-width:0;padding:10px 12px" id="mBack">◀ BACK</button><h2 style="font-size:18px">CAMPAIGN</h2><span class="chips" id="mChips">✦ 0</span></div>
+ <div id="worlds" class="col"></div>
+ <button class="btn s" id="mHangar">HANGAR · UPGRADES</button>
+ <div class="foot">© 2026 Rainwater Games (Jeff Rainwater). All rights reserved.</div>
+</div>
+
+<div id="hangar" class="ov hide">
+ <div class="mhead"><button class="btn s" style="min-width:0;padding:10px 12px" id="hBack">◀ BACK</button><h2 style="font-size:18px">HANGAR</h2><span class="chips" id="hChips">✦ 0</span></div>
+ <div class="foot" style="max-width:360px">Every star you earn gives you one Star Chip ✦. Spend chips on ship upgrades.</div>
+ <div id="ups" class="col"></div>
+</div>
+
+<div id="settings" class="ov hide"><h2>SETTINGS</h2>
+ <div class="panel">
+ <div class="row"><label for="sMus">Music</label><input type="range" id="sMus" min="0" max="1" step="0.05"></div>
+ <div class="row"><label for="sSfx">Sound effects</label><input type="range" id="sSfx" min="0" max="1" step="0.05"></div>
+ <div class="row"><label for="sGhost">Ghost of best run</label><input type="checkbox" id="sGhost"></div>
+ <div class="row"><label for="sLevel">Auto-level on release</label><input type="checkbox" id="sLevel"></div>
+ <div class="row"><label for="sShake">Screen shake</label><input type="checkbox" id="sShake"></div>
+ <div class="row"><label for="sBloom">Glow (bloom)</label><input type="checkbox" id="sBloom"></div>
+ <div class="row"><label for="sVib">Vibration</label><input type="checkbox" id="sVib"></div>
+ </div>
+ <button class="btn" id="setDone">DONE</button>
+ <button class="btn s" id="bReset" style="min-width:0;font-size:12px">RESET PROGRESS</button>
+ <div class="foot">Lunar Lander: Afterburn <span id="verS">v1.0.0</span><br>© 2026 Rainwater Games (Jeff Rainwater). All rights reserved.</div>
+</div>
+
+<div id="intro" class="ov hide"><div class="card" id="introCard"></div></div>
+
+<div id="pause" class="ov hide"><h2>PAUSED</h2>
+ <button class="btn" id="pResume">RESUME</button><button class="btn s" id="pRetry">RESTART LEVEL</button><button class="btn s" id="pSet">SETTINGS</button><button class="btn s" id="pMap">CAMPAIGN MAP</button>
+</div>
+
+<div id="result" class="ov hide"><div class="big ok">TOUCHDOWN</div><div id="rName" style="font-size:14px;color:#9ab"></div>
+ <div class="stars"><i>★</i><i>★</i><i>★</i></div>
+ <div class="panel"><div class="sl" id="rList"></div></div>
+ <div class="note" id="rNote"></div>
+ <button class="btn hot" id="rNext">NEXT LEVEL</button><button class="btn s" id="rRetry">RETRY</button><button class="btn s" id="rMap">CAMPAIGN MAP</button>
+</div>
+
+<div id="crash" class="ov hide" style="background:rgba(20,0,4,.55)"><div class="big crash" id="cTitle">CRASHED</div>
+ <div class="panel"><div id="cWhy" style="font-size:15px;line-height:1.5"></div><div id="cTip" style="font-size:12px;color:#9ab;margin-top:8px;line-height:1.45"></div></div>
+ <button class="btn" id="cRetry">RETRY</button><button class="btn s" id="cMap">CAMPAIGN MAP</button>
+</div>
+
+<script src="game.js?v=0.1"></script>
+<script src="install.js?v=0.1" data-name="Lunar Lander: Afterburn" data-gate="__LL.mode=title" data-bottom="10px"></script>
+</body></html>
